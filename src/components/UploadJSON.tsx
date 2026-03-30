@@ -60,14 +60,6 @@ function FileUpload() {
 
       <p>{locations.length} locations loaded</p>
 
-      <ul>
-        {locations.map((loc, i) => (
-          <li key={i}>
-            {loc.time} — {loc.lat}, {loc.lon}
-          </li>
-        ))}
-      </ul>
-
     </div>
   );
 }
