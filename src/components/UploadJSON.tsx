@@ -1,19 +1,17 @@
 import { useState } from "react";
+import type { LocationPoint } from "../types/types";
 
-type LocationPoint = {
-  lat: number
-  lon: number
-  time: string
+type Props = {
+  onLocationsLoaded: (locations: LocationPoint[]) => void;
 };
 
-function FileUpload() {
-  const [locations, setLocations] = useState<LocationPoint[]>([]);
+function FileUpload({ onLocationsLoaded }: Props) {
 
   function parsePoint(point: string) {
     const [lat, lon] = point
       .replace(/°/g, "")
       .split(",")
-      .map((v) => parseFloat(v.trim()));
+      .map(v => parseFloat(v.trim()));
 
     return { lat, lon };
   }
@@ -25,43 +23,29 @@ function FileUpload() {
     const reader = new FileReader();
 
     reader.onload = (e) => {
-      try {
-        const json = JSON.parse(e.target?.result as string);
+      const json = JSON.parse(e.target?.result as string);
 
-        const extracted: LocationPoint[] = [];
+      const extracted: LocationPoint[] = [];
 
-        json.semanticSegments.forEach((segment: any) => {
-          segment.timelinePath?.forEach((p: any) => {
-            const coords = parsePoint(p.point);
+      json.semanticSegments.forEach((segment: any) => {
+        segment.timelinePath?.forEach((p: any) => {
+          const coords = parsePoint(p.point);
 
-            extracted.push({
-              lat: coords.lat,
-              lon: coords.lon,
-              time: p.time
-            });
+          extracted.push({
+            lat: coords.lat,
+            lon: coords.lon,
+            time: p.time
           });
         });
+      });
 
-        setLocations(extracted);
-        console.log("Locations:", extracted);
-
-      } catch (err) {
-        console.error("Invalid JSON file");
-      }
+      onLocationsLoaded(extracted);
     };
 
     reader.readAsText(file);
   };
 
-  return (
-    <div>
-
-      <input type="file" accept=".json" onChange={handleFileUpload} />
-
-      <p>{locations.length} locations loaded</p>
-
-    </div>
-  );
+  return <input type="file" accept=".json" onChange={handleFileUpload} />;
 }
 
 export default FileUpload;
