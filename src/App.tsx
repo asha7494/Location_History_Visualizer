@@ -10,18 +10,23 @@ function App() {
   function handleLocationsLoaded(data: LocationPoint[]) {
 
     setLocations(data);
-
-    processLocations(data); 
-
   }
+
+  const countryStats = processLocations(locations);
 
   return (
     <div>
       <h1>Location Viewer</h1>
 
       <UploadJSON onLocationsLoaded={handleLocationsLoaded} />
-
-      <p>{locations.length} locations loaded</p>
+      <ul>
+        {countryStats.map((c) => (
+          <li key={c.country}>
+            {c.country}: {c.percentage}%
+          </li>
+        ))}
+      </ul>
+      
     </div>
   );
 }
